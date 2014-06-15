@@ -1,0 +1,49 @@
+extends basetemplate
+
+block header
+  link(rel='stylesheet', href='/stylesheets/home.css')
+  script(src='/js/lib/quill.js')
+
+block content
+  div(class='controlbox')
+    div(class='search-line')
+      input(id='search-input', type='text', placeholder='search your notes')
+      img(src='')
+    div(class='button-line')
+      a(id='new-note', class='button', href='#') new note
+      a(id='new-label', class='button', href='#') new label
+    
+    // placeholder content for now
+    div(class='tree-container')
+      ul(class='tree-list')
+        li(class='label') songs (3)
+          ul(class='inner-list')
+            li daisy
+            li endgam
+            li exile
+            li wtf
+        li clothes (1)
+          ul(class='inner-list')
+            li good pants
+  
+  div(class='mainbox')
+    div(class='editor-header')
+      input(type='text' placeholder='title')
+      img(class='clear-icon', src='')
+
+    div(id='quill-toolbar')
+      button(class='sc-bold') B
+      button(class='sc-italic') I
+
+    div(id='editor')
+       i the world is a blank piece of paper... write your story here.
+
+    div(class='editor-footer')
+      div(class='tag-bar')
+        input(id='tag-input', type='text', placeholder='#tag #your #notes')
+        a(id='save-note-button', class='button', href='#') save
+
+
+
+block scripts
+  script(src='/js/quillconfig.js')

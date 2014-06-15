@@ -1,0 +1,17 @@
+block content
+  div(class='login-wrapper')
+    form(action='/login', method='post')
+      table
+        tr
+          td 
+            label username
+          td 
+            input(id='username', name='username', type='text')
+        tr
+          td
+            label password
+          td
+            input(type='password', name='password')
+        tr
+          td(colspan=2)
+            button(type='submit') Submit

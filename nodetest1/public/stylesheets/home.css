@@ -1,0 +1,66 @@
+.controlbox {
+	float: left;
+	width: 30%;
+	font-size: .8em;
+}
+
+.search-line #search-input {
+	width: 80%;
+}
+
+.search-line img {
+	float: right;
+}
+
+.tree-list {
+	/* margin-left: 15px */
+}
+
+.inner-list {
+	margin-left: 15px
+}
+
+.editor-header {
+    float: left;
+    width: 40%;
+    margin-bottom: 7px;
+}
+
+.editor-header input {
+	width: 95%;
+}
+
+.clear-icon {
+    float: right;
+}
+
+.mainbox {
+	float: right;
+	width: 68%;
+}
+
+#quill-toolbar {
+	/* clear: both; */
+}
+
+.button-line {
+	margin: 13px 0 10px 0;
+}
+
+#new-note {
+	margin-right: 5px;
+}
+
+#tag-input {
+	width: 80%;
+}
+
+#save-note-button {
+	float: right;
+	padding: 3.5px 5%;
+	margin-left: 5px;
+}
+
+.editor-footer {
+	margin-top: 5px;
+}

@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title paperless.
+    link(rel='stylesheet', href='/stylesheets/main.css')
+    script(src='/js/lib/jquery-1.11.1.js')
+    block header
+  
+  body
+    div(class='paperless')
+      div(class='nav')
+        div(class='logo') *paperless*
+        div(class='userinfo')
+          span
+            #{user.username} (logout)
+
+      div(class='content')
+        block content
+
+      div(class='footer')
+        span(class='copyright')
+          a(href='mailto:aaandaaf@gmail.com') &copy; piebaby 2014
+
+    block scripts
