@@ -12,19 +12,25 @@ block content
     div(class='button-line')
       a(id='new-note', class='button', href='#') new note
       a(id='new-label', class='button', href='#') new label
-    
-    // placeholder content for now
+    // labels and notes sidebar
     div(class='tree-container')
-      ul(class='tree-list')
-        li(class='label') songs (3)
-          ul(class='inner-list')
-            li daisy
-            li endgam
-            li exile
-            li wtf
-        li clothes (1)
-          ul(class='inner-list')
-            li good pants
+      ul(class='tree-list', data-bind='foreach: labels')
+        li(class='label', data-bind='text: title')
+          ul(class='inner-list', data-bind='foreach: labels.notes')
+            li(data-bind='text: title')
+
+  //. note sidebar  
+    div(class='tree-container', data-bind="template: 'labels-template'")
+
+  //.
+    script(id='labels-template', type='text/html').
+      <ul class='tree-list'>
+        {{each}(index, label) labels}
+          <li class='label'>
+            ${label.title}
+          </li>
+        {{/each}}
+      </ul>   
   
   div(class='mainbox')
     div(class='editor-header')
@@ -47,3 +53,5 @@ block content
 
 block scripts
   script(src='/js/quillconfig.js')
+  script(src='/js/kohome.js')
+    
