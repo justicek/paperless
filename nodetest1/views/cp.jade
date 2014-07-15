@@ -1,20 +1,29 @@
 extends basetemplate
 
+block header
+  link(rel='stylesheet', href='/stylesheets/main.css')
+
 block content
   div(class='cp-wrapper')
-    table
-      tr
-        td
-          username:
-        td
-          #{username}
-      tr
-        td
-          email:
-        td
-          #{email}
-      tr
-        td
-          password
-        td
-          #{password}
+    form(class='cp-form', action='', method='post')
+      input(type='text', name='hiddenfield', style='display: none', value='#{sessionuser.username}')
+      table
+        tr
+          td
+            label(for='username') username:          
+          td
+            input(type='text', name='username', value='#{sessionuser.username}')
+        tr
+          td 
+            label(for='email') email:
+          td 
+            input(type='text', name='email', value='#{sessionuser.email}')
+        tr
+          td 
+            label(for='password') password:
+          td 
+            input(type='text', name='password', value='#{sessionuser.password}')
+        tr
+          td(colspan='2')
+            input(type='submit', value='apply changes')
+          

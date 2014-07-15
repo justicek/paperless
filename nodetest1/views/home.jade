@@ -8,33 +8,25 @@ block content
   div(class='controlbox')
     div(class='search-line')
       input(id='search-input', type='text', placeholder='search your notes')
-      img(src='')
+      // img(id='search-icon', class='button' src='/images/searchicon.jpg')
+    div(id='label-title-popup')
+      input(id='label-title-input')
+      a(id='label-title-enter', class='button', href='javascript:void(0);') ok
+
     div(class='button-line')
-      a(id='new-note', class='button', href='#') new note
-      a(id='new-label', class='button', href='#') new label
-    // labels and notes sidebar
+      a(id='new-note', class='button', href='javascript:void(0);') new note
+      a(id='new-label', class='button', href='javascript:void(0);') new label
+
     div(class='tree-container')
-      ul(class='tree-list', data-bind='foreach: labels')
-        li(class='label', data-bind='text: title')
-          ul(class='inner-list', data-bind='foreach: labels.notes')
-            li(data-bind='text: title')
+      ul(class='tree-list')
+      //
+        li(class='label')
+          ul(class='inner-list')
+            li(class='note')
 
-  //. note sidebar  
-    div(class='tree-container', data-bind="template: 'labels-template'")
-
-  //.
-    script(id='labels-template', type='text/html').
-      <ul class='tree-list'>
-        {{each}(index, label) labels}
-          <li class='label'>
-            ${label.title}
-          </li>
-        {{/each}}
-      </ul>   
-  
   div(class='mainbox')
     div(class='editor-header')
-      input(type='text' placeholder='title')
+      input(id='note-title-input', type='text' placeholder='title')
       img(class='clear-icon', src='')
 
     div(id='quill-toolbar')
@@ -42,16 +34,14 @@ block content
       button(class='sc-italic') I
 
     div(id='editor')
-       i the world is a blank piece of paper... write your story here.
 
     div(class='editor-footer')
-      div(class='tag-bar')
+      div(class='bottom-bar')
         input(id='tag-input', type='text', placeholder='#tag #your #notes')
-        a(id='save-note-button', class='button', href='#') save
-
-
+        select(id='label-select')
+        a(id='save-note-button', class='button', href='javascript:void(0);') save
 
 block scripts
   script(src='/js/quillconfig.js')
-  script(src='/js/kohome.js')
+  script(src='/js/notebook.js')
     
