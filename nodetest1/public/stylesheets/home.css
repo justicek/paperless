@@ -1,3 +1,4 @@
+/** Notebook sidebar elements **/
 .controlbox {
 	float: left;
 	width: 30%;
@@ -12,12 +13,36 @@
 	float: right;
 }
 
+#label-title-popup {
+	display: none;
+}
+
+#label-title-input {
+	width: 80%;
+}
+
+#label-title-enter {
+	float: right;
+	margin-right: 20px;
+	min-width: 35px;
+	text-align: center;
+}
+
 .tree-list {
 	/* margin-left: 15px */
 }
 
 .inner-list {
-	margin-left: 15px
+	margin-left: 15px;
+}
+
+.note {
+	cursor: pointer;
+}
+
+/** Editor elements **/
+#editor {
+	height: 350px;
 }
 
 .editor-header {
@@ -52,7 +77,11 @@
 }
 
 #tag-input {
-	width: 80%;
+	width: 40%;
+}
+
+#label-select {
+	width: 40%;
 }
 
 #save-note-button {
@@ -62,5 +91,5 @@
 }
 
 .editor-footer {
-	margin-top: 5px;
+	margin-top: 15px;
 }
