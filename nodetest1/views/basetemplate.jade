@@ -4,17 +4,16 @@ html
     title paperless.
     link(rel='stylesheet', href='/stylesheets/main.css')
     script(src='/js/lib/jquery-1.11.1.js')
-    // script(src='/js/lib/knockout-latest.debug.js')
     block header
   
   body
     div(class='paperless')
       div(class='nav')
-        div(class='logo') *paperless*
+        div(class='logo')
+          a(href='/home') *paperless*
         div(class='userinfo')
           span
-            a(href='/cp') #{sessionuser.username}
-            &nbsp; (logout)
+            a(href='/cp') #{sessionuser.username} (logout)
 
       div(class='content')
         block content

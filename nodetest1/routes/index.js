@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 
-/* GET home page */
+/* GET index page */
 router.get('/', function(req, res) {
 	if (!req.session.user)
   		res.redirect('/login');
@@ -40,14 +40,6 @@ router.get('/home', function(req, res) {
 	});
 });
 
-/* GET new note page */
-router.get('/new', function(req, res) {
-	res.render('new', {});
-});
-
-/* POST new note */
-// todo //
-
 /* GET control panel page */
 router.get('/cp', function(req, res) {
 	res.render('cp', {
@@ -57,33 +49,28 @@ router.get('/cp', function(req, res) {
 
 /* POST control panel page */
 router.post('/cp', function(req, res) {
-	var prevUsername = req.body.hiddenfield;
-	var user = {};
+	var prevUsername = req.session.user.username;
+
+	var user = req.session.user;
 	user.username = req.body.username;
 	user.email = req.body.email;
-	user.password = req.body.password;
-		
 
 	req.db.get('usercollection').update(
 		{ username: prevUsername },
-		{ username: user.username,
-		  email: user.email,
-		  password: user.password },
-		{ upsert: false }
+		{ 
+			$set: {	username: user.username,
+					email: user.email,
+					password: user.password }
+		}, function(err, doc) {		// todo: replace with real error handling
+			if (err) {
+				console.log('error updating the database');
+			}
+			else {
+				console.log('database successfully updated');
+			}
+		}
 	);
-
-	res.render('cp', {
-		sessionuser: user
-	});
+	res.redirect('/cp');
 });
 
 module.exports = router;
-
-// route middleware
-function isLoggedIn(req, res, next) {
-
-	if (req.isAuthenticated())
-		return next;
-
-	res.redirect('/');
-}

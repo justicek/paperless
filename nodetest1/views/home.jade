@@ -2,24 +2,26 @@ extends basetemplate
 
 block header
   link(rel='stylesheet', href='/stylesheets/home.css')
+  link(rel='stylesheet', href='/stylesheets/lib/jquery.fancybox.css')
   script(src='/js/lib/quill.js')
+  script(src='/js/lib/jquery.fancybox.js')
 
 block content
   div(class='controlbox')
     div(class='search-line')
       input(id='search-input', type='text', placeholder='search your notes')
-      // img(id='search-icon', class='button' src='/images/searchicon.jpg')
+      // img(id='search-icon', class='button', href='#' src='/images/searchicon.jpg')
     div(id='label-title-popup')
       input(id='label-title-input')
-      a(id='label-title-enter', class='button', href='javascript:void(0);') ok
+      a(id='label-title-enter', class='button', href='#') ok
 
     div(class='button-line')
-      a(id='new-note', class='button', href='javascript:void(0);') new note
-      a(id='new-label', class='button', href='javascript:void(0);') new label
+      a(id='new-note', class='button', href='#') new note
+      a(id='new-label', class='button', href='#') new label
 
     div(class='tree-container')
       ul(class='tree-list')
-      //
+      //  structure after jquery magic
         li(class='label')
           ul(class='inner-list')
             li(class='note')
@@ -39,9 +41,16 @@ block content
       div(class='bottom-bar')
         input(id='tag-input', type='text', placeholder='#tag #your #notes')
         select(id='label-select')
-        a(id='save-note-button', class='button', href='javascript:void(0);') save
+        a(id='save-note-button', class='button', href='#',) save
+
+  //div(class='fancybox')
+    h3 Select a parent label
+    select(id='label-select')
+    div(class='fancybox-buttons')
+      a(id='label-select-cancel', class='button', href='#') cancel
+      a(id='label-select-confirm', class='button', href='#') ok
 
 block scripts
   script(src='/js/quillconfig.js')
+  //script(src='/js/fancyboxconfig.js')
   script(src='/js/notebook.js')
-    

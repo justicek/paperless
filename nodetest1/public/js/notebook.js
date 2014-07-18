@@ -1,16 +1,10 @@
-/**
-	1) load lists from db (mock first)
-	2) render on view
-	3) attach listeners:
-		add new label - produce new label / save to db (mock)
-		add new new note - add note to 'no label'
-**/
 $(document).ready(function() {
 
 	/* Component constructors */
-	var Notebook = function(userno, labels) {
+	var Notebook = function(userno, labels, title) {
 		this.userno = userno;
 		this.labels = labels || [];
+		this.title = title || 'default';
 	};
 
 	var Label = function(dbno, title, notes) {
@@ -26,26 +20,55 @@ $(document).ready(function() {
 		this.content = content;
 	};
 
-	/* Model Components */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+
+	/* Model Components Cache */
 	var notes = [];
 	var labels = [];
-	var notebook;
 
 	var editor;
 	var activeNote;
 	var noteNum = 0;
 	var labelNum = 0;
 
-	/* jQuery Components */
+	/* jQuery Components Cache */
 	var treeList = $('.tree-list');
 	var newLabelButton = $('#new-label');
+	var newNoteButton = $('#new-note')
 	var newLabelInput = $('#label-title-input');
 	var newLabelConfirm = $('#label-title-enter');
 	var labelSelect = $('#label-select');
 	var noteTitlebar = $('#note-title-input');
 	var saveNoteButton = $('#save-note-button');
 
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+
 	/* Private/Helper Functions */
+	function addNoteListener(htmlElement, note) {
+		htmlElement.on('click', function() {
+			saveNoteButton.removeClass('disabled-button');
+
+			editor.deleteText(0, editor.getLength());
+			editor.insertText(0, note.content);			
+			noteTitlebar.val(note.title);
+
+			activeNote = note;
+		});
+
+		// delete on middle click (todo: add icons and change to icon click)
+		htmlElement.on('mousedown', function(e) {
+			if (e.which === 2 && confirm('Are you sure you want to delete \'' + note.title + '\'?')) {
+				removeNote(note.labelno, note.dbno);
+			}
+		});
+	}	
+
 	function makeLabel(label) {
 		var listElem = $('<li></li>');
 		listElem.text(label.title);
@@ -73,14 +96,64 @@ $(document).ready(function() {
 		return option;
 	}
 
-	function addNoteListener(htmlElement, note) {
-		htmlElement.on('click', function() {
-			editor.deleteText(0, editor.getLength());
-			editor.insertText(0, note.content);
-			noteTitlebar.val(note.title);
-			activeNote = note;
-		});
-	}	
+	function findLabel(labelno) {
+		for (var i = 0; i < labels.length; i++) {
+			if (labels[i].dbno === labelno)
+				return labels[i];
+		}
+		return null;
+	}
+
+	function findLabelCacheIndex(labelno) {
+		for (var i = 0; i < labels.length; i++) {
+			if (labels[i].dbno === labelno)
+				return i;
+		}
+		return -1;
+	}
+
+	function findNoteCacheIndex(parentLabel, noteno) {
+		var notesArray = parentLabel.notes;
+		for (var i = 0; i < notesArray.length; i++) {
+			if (notesArray[i].dbno === noteno)
+				return i;
+		}
+		return -1;
+	}
+
+	function removeNote(labelno, noteno) {
+		if (activeNote && activeNote.dbno === noteno)
+			return false;	// no support for deleting active note yet
+		if (labels.length > 0) {
+			var parentLabel = labels[findLabelCacheIndex(labelno)];
+			if (parentLabel.notes.length > 0) {
+				var noteCacheIndex = findNoteCacheIndex(parentLabel, noteno);
+				parentLabel.notes.splice(noteCacheIndex, 1);
+			}
+		}
+		renderNotebook();
+		return true;
+	}
+
+	function removeLabel(labelno) {
+		if (activeNote && activeNote.labelno === labelno)
+			return false;	// no support for deleting active label yet
+		if (labels.length > 1) {
+			var index = findLabelCacheIndex(labelno);
+			labels[index].splice(index, 1);
+			renderNotebook();
+			return true;
+		}
+		else {
+			alert('You should keep at least one label in your notebook.');
+			return false;
+		}
+	}
+
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
 
 	/* Initialization Functions */	
 	function quillInit() {
@@ -109,8 +182,6 @@ $(document).ready(function() {
 
 		labels.push(new Label(labelNum++, 'todo', notes[0]));
 		labels.push(new Label(labelNum++, 'money', notes[1]));
-
-		notebook = new Notebook(0, labels);
 	}
 
 	function renderNotebook() {
@@ -118,8 +189,8 @@ $(document).ready(function() {
 		$('.label').remove();
 		labelSelect.children().remove();
 
-		// render the new tree
-		notebook.labels.forEach(function(label) {
+		// render the new tree / label selects
+		labels.forEach(function(label) {
 			labelSelect.append(makeSelectOption(label));
 
 			var listElem = makeLabel(label);
@@ -134,14 +205,12 @@ $(document).ready(function() {
 
 				listElem.append(innerList);
 			}
-
-
-		});
-
-		
+		});		
 	}
 
 	function addListeners() {
+		saveNoteButton.addClass('disabled-button');
+
 		// show new label popup
 		newLabelButton.on('click', function(e) {
 			e.preventDefault();
@@ -153,7 +222,7 @@ $(document).ready(function() {
 		// add the new label and hide the popup
 		newLabelConfirm.on('click', function(e) {
 			e.preventDefault();
-
+			
 			var newLabel = new Label(labelNum++, newLabelInput.val());
 			labels.push(newLabel);
 
@@ -164,18 +233,59 @@ $(document).ready(function() {
 			renderNotebook();
 		});
 
+		// new note
+		newNoteButton.on('click', function(e) {
+			e.preventDefault();
+			saveNoteButton.removeClass('disabled-button');
+
+			var note = new Note(-1, noteNum++, 'Untitled', 'Blank note');
+			
+			editor.deleteText(0, editor.getLength());
+			editor.insertText(0, note.content);
+			noteTitlebar.val(note.title);
+
+			activeNote = note;
+		});
+
 		// save note
 		saveNoteButton.on('click', function(e) {
 			e.preventDefault();
-
+			if ($(this).hasClass('disabled-button'))
+				return;
+			
 			activeNote.content = editor.getText();
 			activeNote.title = noteTitlebar.val();
 
+			var currentLabelNo = parseInt($('#label-select option:selected').val(), 10); 
+			if (activeNote.labelno !== currentLabelNo) {
+				var newLabel;
+				var oldLabelNum = activeNote.labelno;
+				activeNote.labelno = currentLabelNo;
+
+				// insert note into new label
+				newLabel = findLabel(currentLabelNo);
+				if (newLabel !== null)
+					newLabel.notes.push(activeNote);
+
+				// remove note from old label
+				if (oldLabelNum !== -1) {
+					var labelCacheIndex = findLabelCacheIndex(oldLabelNum);
+					//removeNote(oldLabelNum, activeNote.dbno);
+					labels[labelCacheIndex].notes.splice(
+						findNoteCacheIndex(labels[labelCacheIndex], activeNote.dbno), 1);
+				}
+			}
+
 			renderNotebook();
 		});
-	}	
+	}
 
-	/* Start everything up */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------- */	
+
+	/* Startup function calls */
 	quillInit();
 	loadNotebook();
 	renderNotebook();

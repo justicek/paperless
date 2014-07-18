@@ -28,6 +28,12 @@
 	text-align: center;
 }
 
+#search-icon {
+	float: right;
+	margin-right: 20px;
+	width: 35px;
+}
+
 .tree-list {
 	/* margin-left: 15px */
 }
@@ -38,6 +44,10 @@
 
 .note {
 	cursor: pointer;
+}
+
+.note:hover {
+	color: #fff;
 }
 
 /** Editor elements **/
@@ -82,6 +92,7 @@
 
 #label-select {
 	width: 40%;
+	margin-left: 10px;
 }
 
 #save-note-button {

@@ -16,7 +16,7 @@ var monk = require('monk');
 var db = monk('localhost:27017/nodetest1');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var json = require('./routes/json');
 
 var app = express();
 
@@ -33,7 +33,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // make db acessible to webapp
-// todo: is this needed?
 app.use(function(req, res, next) {
     req.db = db;
     next();
@@ -42,7 +41,7 @@ app.use(function(req, res, next) {
 // session setup
 app.use(session({
     secret: 'mynig',
-    cookie: {maxAge: 600000}
+    cookie: {maxAge: 1800000}   // 30 min
 }));
 
 // passport authentication
@@ -65,7 +64,7 @@ passport.use(new LocalStrategy(
     })
 );
 
-// session serialization/deserialization
+// session serialization/deserialization (todo: implement)
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -76,7 +75,7 @@ passport.deserializeUser(function(user, done) {
 
 // routing
 app.use('/', routes);
-app.use('/users', users);
+app.use('/json', json);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

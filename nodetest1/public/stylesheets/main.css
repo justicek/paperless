@@ -107,3 +107,11 @@ a, a:visited {
     padding: 5px;
     border-radius: 5px;
 }
+
+.button:hover {
+    background-color: #555353;
+}
+
+.disabled-button {
+    background-color: #555353 !important;
+}
