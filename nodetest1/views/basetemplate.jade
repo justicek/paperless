@@ -13,7 +13,7 @@ html
           a(href='/home') *paperless*
         div(class='userinfo')
           span
-            a(href='/cp') #{sessionuser.username} (logout)
+            a(id='cp-link', href='/cp') #{sessionuser.username} (logout)
 
       div(class='content')
         block content

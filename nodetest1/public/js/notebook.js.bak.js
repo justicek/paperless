@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
 	/* Model Components Cache */
+	var notes = [];
 	var labels = [];
 
 	var editor;
@@ -172,12 +173,15 @@ $(document).ready(function() {
 	  	editor.insertText(0, 'the world is a blank piece of paper', 'italic');
 	}
 
-	function loadNotebook() {
-		$.getJSON('/json/mynotebook', function(data) {
-			labels = data;
-		}).done(function() {
-			renderNotebook();
-		});
+	function loadNotebook() {		
+		// todo: replace mock with db calls
+		notes.push([new Note(0, noteNum++, 'practice guitar', 'arpeggios, songwriting, improv'),
+		 new Note(0, noteNum++, 'build paperless', 'jquery, knockout, etc.'),
+		 new Note(0, noteNum++, 'make money', 'research business, budget moeny')]);
+		notes.push([new Note(1, noteNum++, 'shopping list', 'cpu, harddrive, cologne')]);
+
+		labels.push(new Label(labelNum++, 'todo', notes[0]));
+		labels.push(new Label(labelNum++, 'money', notes[1]));
 	}
 
 	function renderNotebook() {
@@ -266,6 +270,7 @@ $(document).ready(function() {
 				// remove note from old label
 				if (oldLabelNum !== -1) {
 					var labelCacheIndex = findLabelCacheIndex(oldLabelNum);
+					//removeNote(oldLabelNum, activeNote.dbno);
 					labels[labelCacheIndex].notes.splice(
 						findNoteCacheIndex(labels[labelCacheIndex], activeNote.dbno), 1);
 				}
@@ -283,5 +288,6 @@ $(document).ready(function() {
 	/* Startup function calls */
 	quillInit();
 	loadNotebook();
+	renderNotebook();
 	addListeners();
 });
