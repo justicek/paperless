@@ -61,7 +61,7 @@ router.post('/cp', function(req, res) {
 			$set: {	username: user.username,
 					email: user.email,
 					password: user.password }
-		}, function(err, doc) {		// todo: replace with real error handling
+		}, function(err) {		// todo: replace with real error handling
 			if (err) {
 				console.log('error updating the database');
 			}

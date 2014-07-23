@@ -1,12 +1,11 @@
 $(document).ready(function() {
 
 	/* Model Components Cache */
+	var userid;
 	var labels = [];
 
 	var editor;
 	var activeNote;
-	var noteNum = 0;
-	var labelNum = 0;
 
 	/* jQuery Components Cache */
 	var treeList = $('.tree-list');
@@ -24,7 +23,7 @@ $(document).ready(function() {
 	/* --------------------------------------------------------------------------------- */
 
 	/* Component constructors */
-	var Notebook = function(userno, labels, title) {
+	var Notebook = function(userno, labels, title) {	// will be used for future multi-notebook support
 		this.userno = userno;
 		this.labels = labels || [];
 		this.title = title || 'default';
@@ -60,7 +59,7 @@ $(document).ready(function() {
 			activeNote = note;
 		});
 
-		// delete on middle click (todo: add icons and change to icon click)
+		// delete on middle click (todo: add icons and delete upon icon click)
 		htmlElement.on('mousedown', function(e) {
 			if (e.which === 2 && confirm('Are you sure you want to delete \'' + note.title + '\'?')) {
 				removeNote(note.labelno, note.dbno);
@@ -131,6 +130,7 @@ $(document).ready(function() {
 			}
 		}
 		renderNotebook();
+		persistLabels();
 		return true;
 	}
 
@@ -141,12 +141,25 @@ $(document).ready(function() {
 			var index = findLabelCacheIndex(labelno);
 			labels[index].splice(index, 1);
 			renderNotebook();
+			persistLabels();
 			return true;
 		}
 		else {
 			alert('You should keep at least one label in your notebook.');
 			return false;
 		}
+	}
+
+	/** Simple GUID generator from stackoverflow **/
+	function guid() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		}
+
+		return function() {
+			return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() +
+					'-' + s4() + s4() + s4(); 
+		};
 	}
 
 	/* --------------------------------------------------------------------------------- */
@@ -174,7 +187,8 @@ $(document).ready(function() {
 
 	function loadNotebook() {
 		$.getJSON('/json/mynotebook', function(data) {
-			labels = data;
+			userid = data.id;
+			labels = data.labels;
 		}).done(function() {
 			renderNotebook();
 		});
@@ -191,7 +205,7 @@ $(document).ready(function() {
 
 			var listElem = makeLabel(label);
 
-			if (label.notes.length > 0) {
+			if (label.notes && label.notes.length > 0) {
 				var innerList = $('<ul></ul>');
 				innerList.addClass('inner-list');
 
@@ -201,7 +215,16 @@ $(document).ready(function() {
 
 				listElem.append(innerList);
 			}
-		});		
+		});
+	}
+
+	function persistLabels() {
+		$.ajax({
+			type: 'POST',
+			data: {labels: labels},
+			url: '/json/save/' + userid,
+			dataType: 'JSON'
+		});
 	}
 
 	function addListeners() {
@@ -219,7 +242,7 @@ $(document).ready(function() {
 		newLabelConfirm.on('click', function(e) {
 			e.preventDefault();
 			
-			var newLabel = new Label(labelNum++, newLabelInput.val());
+			var newLabel = new Label(guid(), newLabelInput.val());
 			labels.push(newLabel);
 
 			newLabelButton.text('new label');
@@ -227,6 +250,7 @@ $(document).ready(function() {
 			$('#label-title-popup').slideToggle();
 
 			renderNotebook();
+			persistLabels();
 		});
 
 		// new note
@@ -234,7 +258,7 @@ $(document).ready(function() {
 			e.preventDefault();
 			saveNoteButton.removeClass('disabled-button');
 
-			var note = new Note(-1, noteNum++, 'Untitled', 'Blank note');
+			var note = new Note(-1, guid(), 'Untitled', 'Blank note');
 			
 			editor.deleteText(0, editor.getLength());
 			editor.insertText(0, note.content);
@@ -252,7 +276,7 @@ $(document).ready(function() {
 			activeNote.content = editor.getText();
 			activeNote.title = noteTitlebar.val();
 
-			var currentLabelNo = parseInt($('#label-select option:selected').val(), 10); 
+			var currentLabelNo = $('#label-select option:selected').val();
 			if (activeNote.labelno !== currentLabelNo) {
 				var newLabel;
 				var oldLabelNum = activeNote.labelno;
@@ -260,8 +284,13 @@ $(document).ready(function() {
 
 				// insert note into new label
 				newLabel = findLabel(currentLabelNo);
-				if (newLabel !== null)
+				if (newLabel !== null) {
+
+					if (!newLabel.notes)
+						newLabel.notes = [];
+
 					newLabel.notes.push(activeNote);
+				}
 
 				// remove note from old label
 				if (oldLabelNum !== -1) {
@@ -272,6 +301,7 @@ $(document).ready(function() {
 			}
 
 			renderNotebook();
+			persistLabels();
 		});
 	}
 
