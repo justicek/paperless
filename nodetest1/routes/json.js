@@ -35,9 +35,6 @@ router.post('/save/:id', function(req, res) {
 						function(err) {
 							if (err)
 								console.log('error saving labels to db');
-							else
-								console.log('labels after persist:');					
-								console.dir(req.body);
 						}
 					);
 		}
@@ -45,17 +42,6 @@ router.post('/save/:id', function(req, res) {
 	else {
 		console.log('insufficient permission for db access request');
 	}
-});
-
-router.post('/savepie', function(req, res) {
-	req.db.get('usercollection').update(
-		{ username: 'piebaby' },
-		{ $set: { labels: req.body } },
-		function(err) {
-			if (err) { console.log('piebaby save bad.'); }
-			else
-				console.log('piebaby save good.');
-		});
 });
 
 module.exports = router;
