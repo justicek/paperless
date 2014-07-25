@@ -19,8 +19,6 @@ $(document).ready(function() {
 
 	/* --------------------------------------------------------------------------------- */
 	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
 
 	/* Component constructors */
 	var Notebook = function(userno, labels, title) {	// will be used for future multi-notebook support
@@ -44,8 +42,6 @@ $(document).ready(function() {
 
 	/* --------------------------------------------------------------------------------- */
 	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
 
 	/* Private/Helper Functions */
 	function addNoteListener(htmlElement, note) {
@@ -65,12 +61,22 @@ $(document).ready(function() {
 				removeNote(note.labelno, note.dbno);
 			}
 		});
+	}
+
+	function addLabelListener(htmlElement, label) {
+		// delete on middle click (todo: add icons and delete upon icon click)
+		htmlElement.on('mousedown', function(e) {
+			if (e.which === 2 && confirm('Are you sure you want to delete \'' + label.title + '\'?')) {
+				removeLabel(label.dbno);
+			}
+		});
 	}	
 
 	function makeLabel(label) {
 		var listElem = $('<li></li>');
 		listElem.text(label.title);
 		listElem.addClass('label');
+		addLabelListener(listElem, label);
 		treeList.append(listElem);
 
 		return listElem;
@@ -120,8 +126,11 @@ $(document).ready(function() {
 	}
 
 	function removeNote(labelno, noteno) {
-		if (activeNote && activeNote.dbno === noteno)
-			return false;	// no support for deleting active note yet
+		if (activeNote && activeNote.dbno === noteno) {
+			// no support for deleting active note yet
+			alert('You cannot (yet) delete the actively-selected note. Sorry, we\'re working on it.');
+			return false;
+		}
 		if (labels.length > 0) {
 			var parentLabel = labels[findLabelCacheIndex(labelno)];
 			if (parentLabel.notes.length > 0) {
@@ -135,11 +144,15 @@ $(document).ready(function() {
 	}
 
 	function removeLabel(labelno) {
-		if (activeNote && activeNote.labelno === labelno)
+		if (activeNote && activeNote.labelno === labelno) {
+			// no support for deleting active note yet
+			alert('You cannot (yet) delete the actively-selected note. Try deleting a label that\'s' +
+			 'not currently selected. Sorry, we\'re working on it.');
 			return false;	// no support for deleting active label yet
+		}
 		if (labels.length > 1) {
 			var index = findLabelCacheIndex(labelno);
-			labels[index].splice(index, 1);
+			labels.splice(index, 1);
 			renderNotebook();
 			persistLabels();
 			return true;
@@ -162,8 +175,6 @@ $(document).ready(function() {
 		};
 	}
 
-	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
 	/* --------------------------------------------------------------------------------- */
 	/* --------------------------------------------------------------------------------- */
 
@@ -307,8 +318,6 @@ $(document).ready(function() {
 
 	/* --------------------------------------------------------------------------------- */
 	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */
-	/* --------------------------------------------------------------------------------- */	
 
 	/* Startup function calls */
 	quillInit();

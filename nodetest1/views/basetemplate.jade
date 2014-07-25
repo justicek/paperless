@@ -10,10 +10,12 @@ html
     div(class='paperless')
       div(class='nav')
         div(class='logo')
-          a(href='/home') *paperless*
+          a(href='/home')
+            img(src='/images/logo.png')
         div(class='userinfo')
           span
-            a(id='cp-link', href='/cp') #{sessionuser.username} (logout)
+            a(id='cp-link', href='/cp') #{sessionuser.username} &nbsp;
+            a(id='logout-link', href='/logout') (logout)
 
       div(class='content')
         block content

@@ -18,7 +18,9 @@ router.get('/login', function(req, res) {
 
 /* GET logout page */
 router.get('/logout', function(req, res) {
-	res.render('logout', {});
+	if (req.session.user)
+		req.session.user = null;
+	res.redirect('/login');
 })
 
 /* POST login */

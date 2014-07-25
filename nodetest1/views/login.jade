@@ -1,17 +1,34 @@
+extends basetemplate-plain
+
+block header
+  title paperless. :: login
+  link(rel='stylesheet', href='/stylesheets/login.css')
+
 block content
-  div(class='login-wrapper')
-    form(action='/login', method='post')
-      table
-        tr
-          td 
-            label username
-          td 
-            input(id='username', name='username', type='text')
-        tr
-          td
-            label password
-          td
-            input(type='password', name='password')
-        tr
-          td(colspan=2)
-            button(type='submit') Submit
+  div.login-wrapper
+    span#logo
+      img(src='/images/logo.png')
+    div.login-box
+      form(action='/login', method='post')
+        table.login-table
+          tr.first-row
+            td 
+              label username
+            td 
+              input(id='username', name='username', type='text')
+          tr.middle-row
+            td
+              label password
+            td
+              input(type='password', name='password')
+          tr.last-row
+            td(colspan=2)
+              a.button(id='login-submit') submit
+              a(id='new-user', href='/newuser') create an account
+
+block scripts
+  script(src='/js/login.js')
+        
+
+      
+
